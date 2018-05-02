@@ -1,6 +1,7 @@
 import MySQLdb
 import os
-import random
+from random import randint
+import sys
 
 #used to clear console in windows environment
 def clearConsole():
@@ -20,10 +21,10 @@ def removeProject():
     
 
 def startNewProject ():
-    #fname = input('What is your first name: ')
-    #lname = input('What is your last name: ')
-    fname = 'Bob'
-    lname = 'Ross'
+    fname = input('What is your first name: ')
+    lname = input('What is your last name: ')
+    #fname = 'Bob'
+    #lname = 'Ross'
     userid = 777
     salary = 0
     motivation = 0
@@ -49,9 +50,9 @@ def startNewProject ():
     conn.autocommit = False
     cursor = conn.cursor()
     try:
-        cursor.execute("CREATE TABLE IF NOT EXISTS employee (e_id INTEGER NOT NULL, salary INTEGER NOT NULL, motivation INTEGER NOT NULL, experience INTEGER NOT NULL, intellligence INTEGER NOT NULL, f_name char(20) NOT NULL, l_name char(20) NOT NULL)")
+        cursor.execute("CREATE TABLE IF NOT EXISTS employee (e_id INTEGER NOT NULL, salary INTEGER NOT NULL, motivation INTEGER NOT NULL, experience INTEGER NOT NULL, f_name char(20) NOT NULL, l_name char(20) NOT NULL)")
         cursor.execute("CREATE TABLE IF NOT EXISTS user (e_id INTEGER NOT NULL, department char(20) NOT NULL)")
-        cursor.execute("CREATE TABLE IF NOT EXISTS to_be_hired (e_id INTEGER NOT NULL, expire_time INTEGER NOT NULL)")
+        cursor.execute("CREATE TABLE IF NOT EXISTS to_be_hired (e_id INTEGER NOT NULL, salary INTEGER NOT NULL, motivation INTEGER NOT NULL, experience INTEGER NOT NULL, f_name char(20) NOT NULL, l_name char(20) NOT NULL , expire_time INTEGER NOT NULL)")
         cursor.execute("CREATE TABLE IF NOT EXISTS projects (p_id INTEGER NOT NULL, potential_profit INTEGER NOT NULL, deadline INTEGER NOT NULL, sucess_rate INTEGER NOT NULL, cost INTEGER NOT NULL, difficulty INTEGER NOT NULL)")
         cursor.execute("CREATE TABLE IF NOT EXISTS e_p (e_id INTEGER NOT NULL, p_id INTEGER NOT NULL)")
         cursor.execute("CREATE TABLE IF NOT EXISTS works_in (e_id INTEGER NOT NULL, department char(20) NOT NULL)")
@@ -86,22 +87,25 @@ def startNewProject ():
     try:
         cursor.execute("INSERT IGNORE INTO engineering_department values('engineering', 1, 1000)")
         cursor.execute("INSERT IGNORE INTO marketing_department values('marketing', 1, 15)")
-        cursor.execute("INSERT IGNORE INTO employee values(%s, %s, %s, %s, %s, %s, %s)", (userid, salary, motivation, exp, intel, fname, lname))
+        cursor.execute("INSERT IGNORE INTO employee values(%s, %s, %s, %s, %s, %s)", (userid, salary, motivation, exp, fname, lname))
         cursor.execute("INSERT ignore INTO user values(%s, %s)", (userid, 'engineering'))
         cursor.execute("INSERT ignore INTO works_in values(%s, %s)", (userid, 'engineering'))
+        cursor.execute("INSERT INTO to_be_hired values(%s, %s, %s, %s, %s, %s, %s)", (111, 0, 100, 0, 'j', 'k', 0)) #placeholders
+        cursor.execute("INSERT INTO to_be_hired values (%s, %s, %s, %s, %s, %s, %s)", (222, 0, 100, 0, 'l', 'm', 0))
+        cursor.execute("INSERT INTO to_be_hired values (%s, %s, %s, %s, %s, %s, %s)", (333, 0, 100, 0, 'n', 'o', 0))
         cursor.close()
         conn.commit()
     except:
         conn.rollback()
     conn.close()
+    generate_to_be_hired()
 
-def updateTBH(updateTBH(e_idx, fnamex, lnamex, experiencex, salaryx, motivationx, exp_timex, idx):
+def updateTBH(e_idx, fnamex, lnamex, experiencex, salaryx, motivationx, exp_timex, idx):
     conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="root",db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
     try:
-        cursor.execute("UPDATE to_be_hired SET e_id = %s, expire_time = %s", (e_idx, exp_timex))
-        cursor.execute("select fame_amt from marketing_department")
+        cursor.execute("UPDATE to_be_hired SET e_id = %s, salary = %s, motivation = %s, experience = %s,  f_name = %s, l_name = %s ,expire_time = %s where e_id = %s", (e_idx, salaryx, motivationx, experiencex, fnamex, lnamex, exp_timex, idx))
         cursor.close()
         conn.commit()
     except:
@@ -125,13 +129,13 @@ def generate_to_be_hired():#need to add the base case where gotta add in new com
         cursor.execute("select * from to_be_hired")
         row = cursor.fetchone()
         id1 = row[0]
-        exp1 = row[1]
+        exp1 = int(row[1])
         row = cursor.fetchone()
         id2 = row[0]
-        exp2 = row[1]
+        exp2 = int(row[1])
         row = cursor.fetchone()
         id3 = row[0]
-        exp3 = row[1]
+        exp3 = int(row[1])
         cursor.close()
         conn.commit()
     except:
@@ -139,7 +143,7 @@ def generate_to_be_hired():#need to add the base case where gotta add in new com
 
     if exp1 == 0:
         e_id1 = randint(10000, 100000)
-        fname1 = 'employee ' + e_id1
+        fname1 = 'employee ' + str(e_id1)
         lname1 = 'smith'
         experience1 = level + (fame * randint(0,2))
         salary1 = 20 + (experience1 * randint(0,2))
@@ -147,28 +151,76 @@ def generate_to_be_hired():#need to add the base case where gotta add in new com
         exp_time1 = randint(1,3)
         updateTBH(e_id1, fname1, lname1, experience1, salary1, motivation1, exp_time1, id1)
 
-    if exp2 == 0
+    if exp2 == 0:
         e_id2 = randint(10000, 100000)
-        fname2 = 'employee ' + e_id1
+        fname2 = 'employee ' + str(e_id2)
         lname2 = 'smith'
         experience2 = level + (fame * randint(0,2))
-        salary2 = 20 + (experience1 * randint(0,2))
+        salary2 = 20 + (experience2 * randint(0,2))
         motivation2 = 100
-        exp_time1 = randint(1,3)
+        exp_time2 = randint(1,3)
         updateTBH(e_id2, fname2, lname2, experience2, salary2, motivation2, exp_time2, id2)
 
-    if exp3 == 0
+    if exp3 == 0:
         e_id3 = randint(10000, 100000)
-        fname3 = 'employee ' + e_id1
+        fname3 = 'employee ' + str(e_id3)
         lname3 = 'smith'
         experience3 = level + (fame * randint(0,2))
-        salary3 = 20 + (experience1 * randint(0,2))
+        salary3 = 20 + (experience3 * randint(0,2))
         motivation3 = 100
-        exp_time1 = randint(1,3)
+        exp_time3 = randint(1,3)
         updateTBH(e_id3, fname3, lname3, experience3, salary3, motivation3, exp_time3, id3)
 
     conn.close()
-	
+
+    #hire employees
+def hireEmployee():
+    conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="root",db="138Company")
+    conn.autocommit = False
+    cursor = conn.cursor()
+    try:
+        print('Fname, Lname, Salary, Time before Offer is gone')
+        cursor.execute("select * from to_be_hired")
+        res = cursor.fetchall()
+        i = 0;
+        for row in res:
+            i = i + 1
+            if row[6] != 0:
+                print("%d   f:%s, l:%s, %s $, %s" % (i, row[4], row[5], row[1], row[6]))
+        cursor.close()
+        conn.commit()
+    except:
+        print('-1')
+        conn.rollback()
+
+    #save values of expire time
+    #cursor.execute("select * from to_be_hired")
+    cursor = conn.cursor()
+    try:
+        cursor.execute("select * from to_be_hired")
+        res = cursor.fetchall()
+        cursor.close()
+        conn.commit()
+    except:
+        print('-2')
+        conn.rollback()
+    while True:
+        choice = int(input("1. Hire employee 1\n2. Hire employee 2\n3. Hire employee 3\n4. Exit\n"))
+        if choice > 0 and choice < 5:
+            break;
+        else:
+            choice = int(input("\nInvalid Choice!\n1. Hire employee 1\n2. Hire employee 2\n3. Hire employee 3\n4. Exit\n"))
+        
+        if choice == 1:#not finished
+            cursor.execute("INSERT IGNORE INTO employee values(%s, %s, %s, %s, %s, %s)", (userid, salary, motivation, exp, fname, lname))
+        if choice == 2:
+            cursor.execute("INSERT IGNORE INTO employee values(%s, %s, %s, %s, %s, %s)", (userid, salary, motivation, exp, fname, lname))
+        if choice == 3:
+            cursor.execute("INSERT IGNORE INTO employee values(%s, %s, %s, %s, %s, %s)", (userid, salary, motivation, exp, fname, lname))
+	conn.close()
+
+
+
 	#Delete specific employee from the database using the employeeID
 def fireEmployee (employeeID):
 	conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="root",db="138Company")
@@ -263,7 +315,7 @@ while True:
 
 if choice == 2:
     #main menu
-    removeProject() #debug nuke database
+    removeProject()
     startNewProject()
     
     
@@ -279,7 +331,7 @@ while True:
         
 
     if choice == 1:
-        generate_to_be_hired()
+        hireEmployee()
 	elif choice == 2:
 		#Fire Employee needs to show the employee list first
 	elif choice == 3:
@@ -287,6 +339,13 @@ while True:
 	elif choice == 4:
 		#Decrease salary
 	elif choice == 5:
+        #assign project
+    elif choice == 6:
+        #view report
+    elif choice == 7:
+        #view employee:
+    elif choice == 8:
+        sys.exit(0)
 		
 	
 		
