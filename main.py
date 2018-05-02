@@ -1,5 +1,6 @@
 import MySQLdb
 import os
+import random
 
 #used to clear console in windows environment
 def clearConsole():
@@ -94,30 +95,79 @@ def startNewProject ():
         conn.rollback()
     conn.close()
 
-def toBeHired(fame, level):
-    
-
-
-def generate_to_be_hired():
+def updateTBH(updateTBH(e_idx, fnamex, lnamex, experiencex, salaryx, motivationx, exp_timex, idx):
     conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="root",db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
     try:
-        print('try: ')
+        cursor.execute("UPDATE to_be_hired SET e_id = %s, expire_time = %s", (e_idx, exp_timex))
+        cursor.execute("select fame_amt from marketing_department")
+        cursor.close()
+        conn.commit()
+    except:
+        conn.rollback()
+    conn.close()
+
+def generate_to_be_hired():#need to add the base case where gotta add in new company
+    conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="root",db="138Company")
+    conn.autocommit = False
+    cursor = conn.cursor()
+    try:
+        #read fame and level
         cursor.execute("select fame_amt from marketing_department")
         row = cursor.fetchone()
         fame = row[0]
         cursor.execute("select level from engineering_department")
         row = cursor.fetchone()
         level = row[0]
+
+        #save values of expire time
+        cursor.execute("select * from to_be_hired")
+        row = cursor.fetchone()
+        id1 = row[0]
+        exp1 = row[1]
+        row = cursor.fetchone()
+        id2 = row[0]
+        exp2 = row[1]
+        row = cursor.fetchone()
+        id3 = row[0]
+        exp3 = row[1]
         cursor.close()
         conn.commit()
     except:
-        print('except: ')
         conn.rollback()
-    conn.close()
 
-    toBeHired(fame, level)
+    if exp1 == 0:
+        e_id1 = randint(10000, 100000)
+        fname1 = 'employee ' + e_id1
+        lname1 = 'smith'
+        experience1 = level + (fame * randint(0,2))
+        salary1 = 20 + (experience1 * randint(0,2))
+        motivation1 = 100
+        exp_time1 = randint(1,3)
+        updateTBH(e_id1, fname1, lname1, experience1, salary1, motivation1, exp_time1, id1)
+
+    if exp2 == 0
+        e_id2 = randint(10000, 100000)
+        fname2 = 'employee ' + e_id1
+        lname2 = 'smith'
+        experience2 = level + (fame * randint(0,2))
+        salary2 = 20 + (experience1 * randint(0,2))
+        motivation2 = 100
+        exp_time1 = randint(1,3)
+        updateTBH(e_id2, fname2, lname2, experience2, salary2, motivation2, exp_time2, id2)
+
+    if exp3 == 0
+        e_id3 = randint(10000, 100000)
+        fname3 = 'employee ' + e_id1
+        lname3 = 'smith'
+        experience3 = level + (fame * randint(0,2))
+        salary3 = 20 + (experience1 * randint(0,2))
+        motivation3 = 100
+        exp_time1 = randint(1,3)
+        updateTBH(e_id3, fname3, lname3, experience3, salary3, motivation3, exp_time3, id3)
+
+    conn.close()
 
 # main
 #start
