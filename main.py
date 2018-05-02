@@ -35,7 +35,7 @@ def startNewProject():
 
     # check if database exists
     # note to developers, please change the first conn to a database that exists
-    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin",)
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin")
     conn.autocommit = False
     cursor = conn.cursor()
     try:
@@ -345,22 +345,81 @@ def removeSelectedProjects(projectID):
         conn.rollback()
     conn.close()
 
-def raiseSalary(employeeID):
+def RaiseSalaryStart(): #Not Done
     conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
     try:
-        cursor.execute('UPDATE employee SET salary = (Salary +5), motivation = (motivation+5) WHERE employeeID = e_id')
+        print('Select an Employee')
+        cursor.execute("select * from employee")
+        res = cursor.fetchall()
+        i = 0;
+        for row in res:
+            i = i + 1
+            if row[6] != 0:
+                print("%d   Name:%s %s, Salary:%s $, Motivation:%s" % (i, row[4], row[5], row[1], row[2]))
+        cursor.close()
+        conn.commit()
+    except:
+        print('-1')
+        conn.rollback()
+
+
+    cursor = conn.cursor()
+    try:
+        cursor.execute("select * from to_be_hired")
+        res = cursor.fetchall()
+        cursor.close()
+        conn.commit()
+    except:
+        print('-2')
+        conn.rollback()
+    while True:
+        choice = int(input())
+        if choice > 0 and choice < 5:
+            break;
+        else:
+            choice = int(
+                input())
+
+        if choice == 1:  # not finished
+            cursor.execute("INSERT IGNORE INTO employee values(%s, %s, %s, %s, %s, %s)",
+                           (userid, salary, motivation, exp, fname, lname))
+        if choice == 2:
+            cursor.execute("INSERT IGNORE INTO employee values(%s, %s, %s, %s, %s, %s)",
+                           (userid, salary, motivation, exp, fname, lname))
+        if choice == 3:
+            cursor.execute("INSERT IGNORE INTO employee values(%s, %s, %s, %s, %s, %s)",
+                           (userid, salary, motivation, exp, fname, lname))
+        conn.close()
+
+
+def raiseSalary(employeeID): #Raises the salary of an employee by a set amount. Increases motivation as well
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+    conn.autocommit = False
+    cursor = conn.cursor()
+    try:
+        cursor.execute('UPDATE employee SET salary = (Salary +5), motivation = (motivation+5) WHERE employeeID = %s',(employeeID))
     except:
         conn.rollback()
     conn.close()
 
-def decreaseSalary(employeeID):
+def decreaseSalary(employeeID): #Decreases the salary of an employee by a set amount. Decreases motivation as well.
     conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
     try:
-        cursor.execute('UPDATE employee SET salary = (Salary-5), motivation = (motivation-5) WHERE employeeID = e_id')
+        cursor.execute('UPDATE employee SET salary = (Salary-5), motivation = (motivation-5) WHERE employeeID = %s',(employeeID))
+    except:
+        conn.rollback()
+    conn.close()
+
+def raiseEXP(employeeID): #Decreases the salary of an employee by a set amount. Decreases motivation as well.
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+    conn.autocommit = False
+    cursor = conn.cursor()
+    try:
+        cursor.execute('UPDATE employee SET expierence = (expierence+1) WHERE employeeID = %s',(employeeID))
     except:
         conn.rollback()
     conn.close()
@@ -395,8 +454,8 @@ while True:
         hireEmployee()
     #elif choice == 2:
         # Fire Employee needs to show the employee list first
-    #elif choice == 3:
-        # Raise Salary
+    elif choice == 3:
+        RaiseSalaryStart()
     #elif choice == 4:
         # Decrease salary
     #elif choice == 5:
