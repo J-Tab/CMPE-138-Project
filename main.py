@@ -7,7 +7,7 @@ def clearConsole():
     clearing()
 
 def removeProject():
-    conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="root",db="138Company")
+    conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="admin",db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
     try:
@@ -31,7 +31,7 @@ def startNewProject ():
 
     #check if database exists 
     #note to developers, please change the first conn to a database that exists
-    conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="root",db="138proj")
+    conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="admin")
     conn.autocommit = False
     cursor = conn.cursor()
     try:
@@ -44,7 +44,7 @@ def startNewProject ():
     conn.close()
 
     #change connection to the new database, create tables if not exist
-    conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="root",db="138Company")
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
     try:
@@ -96,10 +96,10 @@ def startNewProject ():
 
 def toBeHired(fame, level):
     
-
+    print(1)
 
 def generate_to_be_hired():
-    conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="root",db="138Company")
+    conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="admin",db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
     try:
