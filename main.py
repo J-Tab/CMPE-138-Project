@@ -168,6 +168,53 @@ def generate_to_be_hired():#need to add the base case where gotta add in new com
         updateTBH(e_id3, fname3, lname3, experience3, salary3, motivation3, exp_time3, id3)
 
     conn.close()
+	
+	#Delete specific employee from the database using the employeeID
+def fireEmployee (employeeID)
+	conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="root",db="138Company")
+    conn.autocommit = False
+    cursor = conn.cursor()
+	try:
+		cursor.execute("DELETE FROM employee WHERE e_id = employeeID")
+	except:
+		conn.rollback()
+	conn.close()
+
+#Sweeps all and delete any employees that has less than 10 motivation
+def employeeQuit ()
+	conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="root",db="138Company")
+    conn.autocommit = False
+    cursor = conn.cursor()
+	try:
+		#selects all employees with motivation less than 10
+		cursor.execute("SELECT fname, lname FROM employee WHERE motivation < 10")
+		row = cursor.fetchall()
+		#prints out the list of employees that left
+		print('The following employees have left the company due to lack of motivation:')
+		for x in range (0, len(row)):
+			print row[x],
+			if x%2 == 1:
+				print
+			
+		#executes the delete command to the database
+		cursor.execute("DELETE FROM employee WHERE motivation < 10")
+	except:
+		conn.rollback()
+	conn.close()
+	
+#Delete a specific employee if their motivation is less than 10
+def employeeQuit (employeeID)
+	conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="root",db="138Company")
+    conn.autocommit = False
+    cursor = conn.cursor()
+	try:
+		cursor.execute("SELECT fname, lname FROM employee WHERE employeeID = e_ID AND motivation < 10")
+		row = cursor.fetchone()
+		print(row.fname + ' ' + row.lname + ' has sent the letter of resignation due to the lack of motivation.')
+		cursor.execute("DELETE FROM employee WHERE employeeID = e_id AND motivation < 10")
+	except:
+		conn.rollback()
+	conn.close()
 
 # main
 #start
@@ -198,6 +245,10 @@ while True:
 
     if choice == 1:
         generate_to_be_hired()
+		
+		
+	
+	
 
 
 
