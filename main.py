@@ -58,7 +58,7 @@ def startNewProject():
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS to_be_hired (e_id INTEGER NOT NULL, salary INTEGER NOT NULL, motivation INTEGER NOT NULL, experience INTEGER NOT NULL, f_name char(20) NOT NULL, l_name char(20) NOT NULL , expire_time INTEGER NOT NULL)")
         cursor.execute(
-            "CREATE TABLE IF NOT EXISTS projects (p_id INTEGER NOT NULL, potential_profit INTEGER NOT NULL, deadline INTEGER NOT NULL, sucess_rate INTEGER NOT NULL, cost INTEGER NOT NULL, difficulty INTEGER NOT NULL)")
+            "CREATE TABLE IF NOT EXISTS projects (p_id INTEGER NOT NULL, potential_profit INTEGER NOT NULL, deadline INTEGER NOT NULL, sucess_rate INTEGER NOT NULL, cost INTEGER NOT NULL, difficulty INTEGER NOT NULL, availability BOOLEAN NOT NULL)")
         cursor.execute("CREATE TABLE IF NOT EXISTS e_p (e_id INTEGER NOT NULL, p_id INTEGER NOT NULL)")
         cursor.execute("CREATE TABLE IF NOT EXISTS works_in (e_id INTEGER NOT NULL, department char(20) NOT NULL)")
         cursor.execute("CREATE TABLE IF NOT EXISTS report (r_id INTEGER NOT NULL, misfortune_id INTEGER NOT NULL)")
@@ -251,7 +251,14 @@ def fireEmployee(employeeID):
     conn.autocommit = False
     cursor = conn.cursor()
     try:
-        cursor.execute("DELETE FROM employee WHERE e_id = %s",(employeeID))
+        cursor.execute("SELECT salary FROM employee where %s = employeeID",(employeeID))
+		cost = cursor.fetchone()
+		#increase the budget from whatever pay that the employee has
+		cursor.execute("UPDATE engineering_department SET budget = budget + cost")
+		cursor.execute("SELECT fname, lname FROM employee WHERE employeeID = e_ID")
+		row = cursor.fetchone()
+		print(row.fname + ' ' + row.lname + ' has been fired due to their incompetence')
+		cursor.execute("DELETE FROM employee WHERE e_id = employeeID")
     except:
         conn.rollback()
     conn.close()
@@ -291,6 +298,10 @@ def employeeQuit(employeeID):
     conn.autocommit = False
     cursor = conn.cursor()
     try:
+		cursor.execute("SELECT salary FROM employee WHERE %s = e_id AND motivation < 10", (employeeID))
+		cost = cursor.fetchone()
+		#increase the budget from whatever pay that the employee has
+		cursor.execute("UPDATE engineering_department SET budget = budget + cost")
         cursor.execute("SELECT fname, lname FROM employee WHERE %s = e_ID AND motivation < 10",(employeeID))
         row = cursor.fetchone()
         print(row.fname + ' ' + row.lname + ' has sent the letter of resignation due to the lack of motivation.')
@@ -300,7 +311,7 @@ def employeeQuit(employeeID):
     conn.close()
 
 
-# Generates ONE single new project
+# Generates ONE single new project *******UNFINISHED*******
 def generateProjects():
     conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
 
@@ -308,11 +319,14 @@ def generateProjects():
     conn.autocommit = False
     cursor = conn.cursor()
     try:
-        cursor.execute('SELECT COUNT(p_id) FROM projects')
-        size = cursor.fetchone()
-        for x in range(size, 5):
-            print()
-    # generate projects
+        #clears out any expired projects
+		sweepRemoveProjects()
+		#counts the amount of available projects that are left
+		cursor.execute("SELECT COUNT(p_id) FROM projects WHERE availability = 1")
+		size = cursor.fetchone()
+		#generate up to 5 different projects
+		for x in range (size, 5):
+			#generate projects ***********
     except:
         conn.rollback()
     conn.close()
@@ -326,24 +340,22 @@ def sweepRemoveProjects():
     conn.autocommit = False
     cursor = conn.cursor()
     try:
-        cursor.execute('DELETE FROM projects WHERE deadline <= 0')
+        cursor.execute("DELETE FROM projects WHERE deadline <= 0 AND availability = 1")
     except:
         conn.rollback()
     conn.close()
 
-
-
-def removeSelectedProjects(projectID):
-    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
-
-
-    conn.autocommit = False
+def removeSelectedProjects (projectID):
+	conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="root",db="138Company")
+    
+	
+	conn.autocommit = False
     cursor = conn.cursor()
-    try:
-        cursor.execute('DELETE FROM projects WHERE projectID = p_id')
-    except:
-        conn.rollback()
-    conn.close()
+	try:
+		cursor.execute("UPDATE FROM projects SET availability = NOT availability WHERE %s = p_id", (projectID))
+	except:
+		conn.rollback()
+	conn.close()
 
 def RaiseSalaryStart(): #Not Done
     conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
@@ -423,6 +435,37 @@ def raiseEXP(employeeID): #Decreases the salary of an employee by a set amount. 
     except:
         conn.rollback()
     conn.close()
+	
+#view list of employees
+def viewEmployee()
+	conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="root",db="138Company")
+    conn.autocommit = False
+    cursor = conn.cursor()
+	try:
+		cursor.execute("SELECT * FROM employee")
+		row = cursor.fetchall()
+		widths = []
+		columns = []
+		tavnit = '|'
+		separator = '+' 
+
+		for cd in cursor.description:
+			widths.append(max(cd[2], len(cd[0])))
+			columns.append(cd[0])
+
+		for w in widths:
+			tavnit += " %-"+"%ss |" % (w,)
+			separator += '-'*w + '--+'
+
+		print(separator)
+		print(tavnit % tuple(columns))
+		print(separator)
+		for row in results:
+			print(tavnit % row)
+		print(separator)
+	except:
+		conn.rollback()
+	conn.close()
 
 # main
 # start
@@ -452,8 +495,11 @@ while True:
 
     if choice == 1:
         hireEmployee()
-    #elif choice == 2:
-        # Fire Employee needs to show the employee list first
+    elif choice == 2:
+		clearConsole()
+		viewEmployee()
+		employeeID = input('Enter the employee ID you wish to fire: ')
+		fireEmployee(employeeID)
     elif choice == 3:
         RaiseSalaryStart()
     #elif choice == 4:
@@ -461,10 +507,12 @@ while True:
     #elif choice == 5:
         # assign project
     #elif choice == 6:
-    # view report
-    #elif choice == 7:
-    # view employee:
-    elif choice == 8:
+		# view report
+    elif choice == 7:
+		viewEmployee()
+	#elif choice == 8:
+		# view project
+    elif choice == 9:
         sys.exit(0)
 
 '''
