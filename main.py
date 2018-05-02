@@ -251,7 +251,7 @@ def fireEmployee(employeeID):
     conn.autocommit = False
     cursor = conn.cursor()
     try:
-        cursor.execute("DELETE FROM employee WHERE e_id = employeeID")
+        cursor.execute("DELETE FROM employee WHERE e_id = %s",(employeeID))
     except:
         conn.rollback()
     conn.close()
@@ -283,15 +283,15 @@ def employeeQuit():
     conn.close()
 
 
-    # Delete a specific employee if their motivation is less than 10
-    def employeeQuit(employeeID):
-        conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+ # Delete a specific employee if their motivation is less than 10
+def employeeQuit(employeeID):
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
 
 
     conn.autocommit = False
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT fname, lname FROM employee WHERE employeeID = e_ID AND motivation < 10")
+        cursor.execute("SELECT fname, lname FROM employee WHERE %s = e_ID AND motivation < 10",(employeeID))
         row = cursor.fetchone()
         print(row.fname + ' ' + row.lname + ' has sent the letter of resignation due to the lack of motivation.')
         cursor.execute("DELETE FROM employee WHERE employeeID = e_id AND motivation < 10")
