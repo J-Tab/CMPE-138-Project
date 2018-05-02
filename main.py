@@ -247,18 +247,17 @@ def hireEmployee():
 def fireEmployee(employeeID):
     conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
 
-
     conn.autocommit = False
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT salary FROM employee where %s = employeeID",(employeeID))
-		cost = cursor.fetchone()
-		#increase the budget from whatever pay that the employee has
-		cursor.execute("UPDATE engineering_department SET budget = budget + cost")
-		cursor.execute("SELECT fname, lname FROM employee WHERE employeeID = e_ID")
-		row = cursor.fetchone()
-		print(row.fname + ' ' + row.lname + ' has been fired due to their incompetence')
-		cursor.execute("DELETE FROM employee WHERE e_id = employeeID")
+        cursor.execute("SELECT salary FROM employee where %s = employeeID", (employeeID))
+        cost = cursor.fetchone()
+        # increase the budget from whatever pay that the employee has
+        cursor.execute("UPDATE engineering_department SET budget = budget + cost")
+        cursor.execute("SELECT fname, lname FROM employee WHERE %s = e_ID", (employeeID))
+        row = cursor.fetchone()
+        print(row.fname + ' ' + row.lname + ' has been fired due to their incompetence')
+        cursor.execute("DELETE FROM employee WHERE e_id = employeeID")
     except:
         conn.rollback()
     conn.close()
@@ -267,7 +266,6 @@ def fireEmployee(employeeID):
 # Sweeps all and delete any employees that has less than 10 motivation
 def employeeQuit():
     conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
-
 
     conn.autocommit = False
     cursor = conn.cursor()
@@ -290,19 +288,18 @@ def employeeQuit():
     conn.close()
 
 
- # Delete a specific employee if their motivation is less than 10
+# Delete a specific employee if their motivation is less than 10
 def employeeQuit(employeeID):
     conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
-
 
     conn.autocommit = False
     cursor = conn.cursor()
     try:
-		cursor.execute("SELECT salary FROM employee WHERE %s = e_id AND motivation < 10", (employeeID))
-		cost = cursor.fetchone()
-		#increase the budget from whatever pay that the employee has
-		cursor.execute("UPDATE engineering_department SET budget = budget + cost")
-        cursor.execute("SELECT fname, lname FROM employee WHERE %s = e_ID AND motivation < 10",(employeeID))
+        cursor.execute("SELECT salary FROM employee WHERE %s = e_id AND motivation < 10", (employeeID))
+        cost = cursor.fetchone()
+        # increase the budget from whatever pay that the employee has
+        cursor.execute("UPDATE engineering_department SET budget = budget + cost")
+        cursor.execute("SELECT fname, lname FROM employee WHERE %s = e_ID AND motivation < 10", (employeeID))
         row = cursor.fetchone()
         print(row.fname + ' ' + row.lname + ' has sent the letter of resignation due to the lack of motivation.')
         cursor.execute("DELETE FROM employee WHERE employeeID = e_id AND motivation < 10")
@@ -315,18 +312,18 @@ def employeeQuit(employeeID):
 def generateProjects():
     conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
 
-
     conn.autocommit = False
     cursor = conn.cursor()
     try:
-        #clears out any expired projects
-		sweepRemoveProjects()
-		#counts the amount of available projects that are left
-		cursor.execute("SELECT COUNT(p_id) FROM projects WHERE availability = 1")
-		size = cursor.fetchone()
-		#generate up to 5 different projects
-		for x in range (size, 5):
-			#generate projects ***********
+        # clears out any expired projects
+        sweepRemoveProjects()
+        # counts the amount of available projects that are left
+        cursor.execute("SELECT COUNT(p_id) FROM projects WHERE availability = 1")
+        size = cursor.fetchone()
+        # generate up to 5 different projects
+        for x in range(size, 5):
+            print(1)
+            # generate projects ***********
     except:
         conn.rollback()
     conn.close()
@@ -336,7 +333,6 @@ def generateProjects():
 def sweepRemoveProjects():
     conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
 
-
     conn.autocommit = False
     cursor = conn.cursor()
     try:
@@ -345,19 +341,20 @@ def sweepRemoveProjects():
         conn.rollback()
     conn.close()
 
-def removeSelectedProjects (projectID):
-	conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="root",db="138Company")
-    
-	
-	conn.autocommit = False
-    cursor = conn.cursor()
-	try:
-		cursor.execute("UPDATE FROM projects SET availability = NOT availability WHERE %s = p_id", (projectID))
-	except:
-		conn.rollback()
-	conn.close()
 
-def RaiseSalaryStart(): #Not Done
+def removeSelectedProjects(projectID):
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
+
+    conn.autocommit = False
+    cursor = conn.cursor()
+    try:
+        cursor.execute("UPDATE FROM projects SET availability = NOT availability WHERE %s = p_id", (projectID))
+    except:
+        conn.rollback()
+    conn.close()
+
+
+def RaiseSalaryStart():  # Not Done
     conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
@@ -375,7 +372,6 @@ def RaiseSalaryStart(): #Not Done
     except:
         print('-1')
         conn.rollback()
-
 
     cursor = conn.cursor()
     try:
@@ -406,66 +402,122 @@ def RaiseSalaryStart(): #Not Done
         conn.close()
 
 
-def raiseSalary(employeeID): #Raises the salary of an employee by a set amount. Increases motivation as well
+def raiseSalary(employeeID):  # Raises the salary of an employee by a set amount. Increases motivation as well
     conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
     try:
-        cursor.execute('UPDATE employee SET salary = (Salary +5), motivation = (motivation+5) WHERE employeeID = %s',(employeeID))
+        cursor.execute('UPDATE employee SET salary = (Salary +5), motivation = (motivation+5) WHERE employeeID = %s',
+                       (employeeID))
     except:
         conn.rollback()
     conn.close()
 
-def decreaseSalary(employeeID): #Decreases the salary of an employee by a set amount. Decreases motivation as well.
+
+def decreaseSalary(employeeID):  # Decreases the salary of an employee by a set amount. Decreases motivation as well.
     conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
     try:
-        cursor.execute('UPDATE employee SET salary = (Salary-5), motivation = (motivation-5) WHERE employeeID = %s',(employeeID))
+        cursor.execute('UPDATE employee SET salary = (Salary-5), motivation = (motivation-5) WHERE employeeID = %s',
+                       (employeeID))
     except:
         conn.rollback()
     conn.close()
 
-def raiseEXP(employeeID): #Decreases the salary of an employee by a set amount. Decreases motivation as well.
+
+def raiseEXP(employeeID):  # Decreases the salary of an employee by a set amount. Decreases motivation as well.
     conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
     try:
-        cursor.execute('UPDATE employee SET expierence = (expierence+1) WHERE employeeID = %s',(employeeID))
+        cursor.execute('UPDATE employee SET expierence = (expierence+1) WHERE employeeID = %s', (employeeID))
     except:
         conn.rollback()
     conn.close()
-	
-#view list of employees
-def viewEmployee()
-	conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="root",db="138Company")
+
+
+# view list of employees
+def viewEmployee():
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
-	try:
-		cursor.execute("SELECT * FROM employee")
-		row = cursor.fetchall()
-		widths = []
-		columns = []
-		tavnit = '|'
-		separator = '+' 
+    try:
+        cursor.execute("SELECT * FROM employee")
+        row = cursor.fetchall()
+        widths = []
+        columns = []
+        tavnit = '|'
+        separator = '+'
 
-		for cd in cursor.description:
-			widths.append(max(cd[2], len(cd[0])))
-			columns.append(cd[0])
+        for cd in cursor.description:
+            widths.append(max(cd[2], len(cd[0])))
+            columns.append(cd[0])
 
-		for w in widths:
-			tavnit += " %-"+"%ss |" % (w,)
-			separator += '-'*w + '--+'
+        for w in widths:
+            tavnit += " %-" + "%ss |" % (w,)
+            separator += '-' * w + '--+'
 
-		print(separator)
-		print(tavnit % tuple(columns))
-		print(separator)
-		for row in results:
-			print(tavnit % row)
-		print(separator)
-	except:
-		conn.rollback()
-	conn.close()
+        print(separator)
+        print(tavnit % tuple(columns))
+        print(separator)
+        for row in results:
+            print(tavnit % row)
+        print(separator)
+    except:
+        conn.rollback()
+    conn.close()
+
+
+def viewProject():
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+    conn.autocommit = False
+    cursor = conn.cursor()
+
+    try:
+        print('Projects:')
+        cursor.execute("select * from projects")
+        res = cursor.fetchall()
+        i = 0;
+        for row in res:
+            i = i + 1
+            if row[6] != 0:
+                print("%d   Potential Profit:%s, Deadline: %s , Sucess Rate:%s , Cost: %s" % (
+                i, row[2], row[3], row[4], row[5]))
+        cursor.close()
+        conn.commit()
+    except:
+        conn.rollback()
+    while True:
+        choice = input("Enter to return to main menu.")
+        conn.close()
+        break
+
+
+def viewReport():
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+    conn.autocommit = False
+    cursor = conn.cursor()
+
+    try:
+        print('Projects:')
+        cursor.execute("select * from projects")
+        res = cursor.fetchall()
+        i = 0;
+        for row in res:
+            i = i + 1
+            if row[6] != 0:
+                print("%d   Potential Profit:%s, Deadline: %s , Sucess Rate:%s , Cost: %s" % (
+                i, row[2], row[3], row[4], row[5]))
+        cursor.close()
+        conn.commit()
+    except:
+        conn.rollback()
+    while True:
+        choice = input("Enter to return to main menu.")
+        conn.close()
+        break
+
 
 # main
 # start
@@ -496,22 +548,22 @@ while True:
     if choice == 1:
         hireEmployee()
     elif choice == 2:
-		clearConsole()
-		viewEmployee()
-		employeeID = input('Enter the employee ID you wish to fire: ')
-		fireEmployee(employeeID)
+        clearConsole()
+        viewEmployee()
+        employeeID = input('Enter the employee ID you wish to fire: ')
+        fireEmployee(employeeID)
     elif choice == 3:
         RaiseSalaryStart()
-    #elif choice == 4:
-        # Decrease salary
-    #elif choice == 5:
-        # assign project
-    #elif choice == 6:
-		# view report
+    # elif choice == 4:
+    # Decrease salary
+    # elif choice == 5:
+    # assign project
+    # elif choice == 6:
+    # view report
     elif choice == 7:
-		viewEmployee()
-	#elif choice == 8:
-		# view project
+        viewEmployee()
+    elif choice == 8:
+        viewProject()
     elif choice == 9:
         sys.exit(0)
 
