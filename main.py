@@ -170,7 +170,7 @@ def generate_to_be_hired():#need to add the base case where gotta add in new com
     conn.close()
 	
 	#Delete specific employee from the database using the employeeID
-def fireEmployee (employeeID)
+def fireEmployee (employeeID):
 	conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="root",db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
@@ -181,7 +181,7 @@ def fireEmployee (employeeID)
 	conn.close()
 
 #Sweeps all and delete any employees that has less than 10 motivation
-def employeeQuit ()
+def employeeQuit ():
 	conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="root",db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
@@ -203,7 +203,7 @@ def employeeQuit ()
 	conn.close()
 	
 #Delete a specific employee if their motivation is less than 10
-def employeeQuit (employeeID)
+def employeeQuit (employeeID):
 	conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="root",db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
@@ -215,7 +215,42 @@ def employeeQuit (employeeID)
 	except:
 		conn.rollback()
 	conn.close()
+	
+#Generates ONE single new project
+def generateProjects ():
+	conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="root",db="138Company")
+    conn.autocommit = False
+    cursor = conn.cursor()
+	try:
+		cursor.execute('SELECT COUNT(p_id) FROM projects')
+		size = cursor.fetchone()
+		for x in range (size, 5):
+			#generate projects
+	except:
+		conn.rollback()
+	conn.close()
 
+#Removes any expired projects
+def sweepRemoveProjects ():
+	conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="root",db="138Company")
+    conn.autocommit = False
+    cursor = conn.cursor()
+	try:
+		cursor.execute('DELETE FROM projects WHERE deadline <= 0')
+	except:
+		conn.rollback()
+	conn.close()
+	
+def removeSelectedProjects (projectID):
+	conn = MySQLdb.connect(host="localhost",port = 3306, user="root", passwd="root",db="138Company")
+    conn.autocommit = False
+    cursor = conn.cursor()
+	try:
+		cursor.execute('DELETE FROM projects WHERE projectID = p_id')
+	except:
+		conn.rollback()
+	conn.close()
+	
 # main
 #start
 while True:
@@ -234,17 +269,26 @@ if choice == 2:
     
 while True:
     clearConsole()
-    choice = int(input("1. Hire Employee\n2. Fire Employee\n3.Raise Salary\n4.Decrease Salary\n5.View Report\n6. View Employees\n7. View Project\n8. Exit\n"))
+    choice = int(input("1. Hire Employee\n2. Fire Employee\n3.Raise Salary\n4.Decrease Salary\n5.Assign Projects\n6.View Report\n7. View Employees\n8. View Project\n9. Exit\n"))
     
     while True:
         if choice > 0 and choice < 9:
             break
         else:
-            choice = int(input("\nInvalid Choice!\n1. Hire Employee\n2. Fire Employee\n3.Raise Salary\n4.Decrease Salary\n5.View Report\n6. View Employees\n7. View Project\n8. Exit\n"))
+            choice = int(input("1. Hire Employee\n2. Fire Employee\n3.Raise Salary\n4.Decrease Salary\n5.Assign Projects\n6.View Report\n7. View Employees\n8. View Project\n9. Exit\n"))
         
 
     if choice == 1:
         generate_to_be_hired()
+	elif choice == 2:
+		#Fire Employee needs to show the employee list first
+	elif choice == 3:
+		#Raise Salary
+	elif choice == 4:
+		#Decrease salary
+	elif choice == 5:
+		
+	
 		
 		
 	
