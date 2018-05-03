@@ -333,8 +333,18 @@ def generateProjects():
         size = cursor.fetchone()
         # generate up to 5 different projects
         for x in range(size, 5):
-            print(1)
-            # generate projects ***********
+            cursour. execute("SELECT fame_amt FROM marketing_department")
+			fame = cursour.fetchone()
+			
+			projectID = randint(100,10000)
+			difficulty = (fame%5+1) 
+			potentialProfit = (20^difficulty) * fame * randint(0,3)
+			deadline = 2*difficulty + difficulty + randint(0,1)
+			cost = 16^difficulty * difficulty * randint(0,3)
+			successRate = 75/difficulty
+			projectName = 'Operation ' + str(projectID)
+			
+			cursor.execute("INSERT INTO projects values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (projectID, potentialProfit, deadline, successRate, cost, difficulty, 1, 0, projectName, 0))
     except:
         conn.rollback()
     conn.close()
