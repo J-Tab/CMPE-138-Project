@@ -56,7 +56,7 @@ def startNewProject():
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS to_be_hired (e_id INTEGER NOT NULL, salary INTEGER NOT NULL, motivation INTEGER NOT NULL, experience INTEGER NOT NULL, f_name char(20) NOT NULL, l_name char(20) NOT NULL , expire_time INTEGER NOT NULL)")
         cursor.execute(
-            "CREATE TABLE IF NOT EXISTS projects (p_id INTEGER NOT NULL, potential_profit INTEGER NOT NULL, deadline INTEGER NOT NULL, sucess_rate INTEGER NOT NULL, cost INTEGER NOT NULL, difficulty INTEGER NOT NULL, availability BOOLEAN NOT NULL, complete BOOLEAN NOT NULL)")
+            "CREATE TABLE IF NOT EXISTS projects (p_id INTEGER NOT NULL, potential_profit INTEGER NOT NULL, deadline INTEGER NOT NULL, sucess_rate INTEGER NOT NULL, cost INTEGER NOT NULL, difficulty INTEGER NOT NULL, availability BOOLEAN NOT NULL, complete BOOLEAN NOT NULL, p_name VARCHAR(100)), success BOOLEAN")
         cursor.execute("CREATE TABLE IF NOT EXISTS e_p (e_id INTEGER NOT NULL, p_id INTEGER NOT NULL)")
         cursor.execute("CREATE TABLE IF NOT EXISTS works_in (e_id INTEGER NOT NULL, department char(20) NOT NULL)")
         cursor.execute("CREATE TABLE IF NOT EXISTS report (r_id INTEGER NOT NULL, misfortune_id INTEGER NOT NULL)")
@@ -383,7 +383,7 @@ def RaiseSalaryStart():  # Not Done
 
 
 
-def decreaseSalary(employeeID):  # Decreases the salary of an employee by a set amount. Decreases motivation as well.
+def decreaseSalary():  # Decreases the salary of an employee by a set amount. Decreases motivation as well.
     while True:
         choice = (input("Type Employee ID:\n"))
         conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
@@ -398,13 +398,40 @@ def decreaseSalary(employeeID):  # Decreases the salary of an employee by a set 
             conn.rollback()
         break
 
+def generateReport():
+    while True:
+        projectID = (input("Type Project ID:\n"))
+        conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+        conn.autocommit = False
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute('SELECT * FROM project WHERE project.complete = FALSE AND p_id = %s' % projectID)
+            res = cursor.fetchall()
+            i = 0;
+            for row in res:
+                i = i + 1
+                if row[7] != 0:
+                    print('IN PROGESS:\nReport for %d AKA %s is as follows:\n This project has a difficulty of:%d\n It has a cost of: $ %d.\n Therefore, it has a potential profit of: $%d\n The deadline for the project is: %d \n '  % (row[0],row[8],row[5],row[4],row[1],row[3],row[2]))
+                else:
+                    if(row[9] == True):
+                        print('COMPLETE:\n %d AKA %s is complete.\n The project has been a success. \n We have earned $ %d.\n Good work! \n' %(row[0],row[8],row[1]))
+                    else:
+                        print('%d AKA %s is complete:\n The project has been a failure! \n Misfortune has occured! \n ' % (row[0],row[8]))
+
+            cursor.close()
+            conn.commit()
+        except:
+            conn.rollback()
+        conn.close()
 
 def raiseEXP(employeeID):  # Decreases the salary of an employee by a set amount. Decreases motivation as well.
     conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
     try:
-        cursor.execute('UPDATE employee SET expierence = (expierence+1) WHERE employeeID = %s', (employeeID))
+        cursor.execute('UPDATE employee SET experience = (experience+1) WHERE e_id = %s', (employeeID))
+        conn.commit()
     except:
         conn.rollback()
     conn.close()
@@ -519,12 +546,12 @@ while True:
         fireEmployee(employeeID)
     elif choice == 3:
         RaiseSalaryStart()
-    # elif choice == 4:
-    # Decrease salary
+    elif choice == 4:
+        decreaseSalary()
     # elif choice == 5:
     # assign project
-    # elif choice == 6:
-    # view report
+    elif choice == 6:
+        generateReport()
     elif choice == 7:
         viewEmployee()
     elif choice == 8:
