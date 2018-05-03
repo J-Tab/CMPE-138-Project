@@ -513,6 +513,29 @@ def viewReport():
         break
 
 
+def nextDay():
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
+    conn.autocommit = False
+    cursor = conn.cursor()
+    try:
+        cursor.execute("UPDATE projects SET deadline = deadline - 1") #lower all projects closer to deadline
+        cost = 0
+        cursor.execute("select salary from employee") #sum up the cost of all employees
+        res = cursor.fetchall()
+        for row in res:
+            cost = cost + int(row[0])
+        cursor.execute("UPDATE engineering_department SET budget = budget - %s", (cost))
+        sweepRemoveProjects()
+        cursor.execute("SELECT budget FROM engineering_department")
+        res = cursor.fetchone()
+        if res < 0:
+            print('GAME OVER')
+            sys.exit(0)
+    except:
+        conn.rollback()
+    conn.close()
+
+
 # main
 # start
 while True:
@@ -537,7 +560,7 @@ while True:
             break
         else:
             choice = int(input(
-                "1. Hire Employee\n2. Fire Employee\n3.Raise Salary\n4.Decrease Salary\n5.Assign Projects\n6.View Report\n7. View Employees\n8. View Project\n9. Exit\n"))
+                "1. Hire Employee\n2. Fire Employee\n3.Raise Salary\n4.Decrease Salary\n5.Assign Projects\n6.View Report\n7. View Employees\n8. View Project\n9. Next day\n10. Exit\n"))
 
     if choice == 1:
         hireEmployee()
@@ -559,30 +582,6 @@ while True:
     elif choice == 8:
         viewProject()
     elif choice == 9:
+        nextDay()
+    elif choice == 10:
         sys.exit(0)
-
-'''
-# delete
-try:
-    print('try: ')
-    cursor.execute("DELETE from test where statement = 'Test1'")
-    cursor.close()
-    conn.commit()
-except:
-    print('except: ')
-    conn.rollback()
-
-conn.close()
-'''
-
-# row = cursor.fetchone()
-# print('id:', row.user_id)
-
-# rows = cursor.fetchall()
-# for row in rows:
-#   print(row.user_id, row.user_name)
-
-# update & delete
-# cursor.execute("delete from products where id <> ?", 'pyodbc')
-# print(cursor.rowcount, 'products deleted')
-# cnxn.commit()
