@@ -58,7 +58,7 @@ def startNewProject():
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS to_be_hired (e_id INTEGER NOT NULL, salary INTEGER NOT NULL, motivation INTEGER NOT NULL, experience INTEGER NOT NULL, f_name char(20) NOT NULL, l_name char(20) NOT NULL , expire_time INTEGER NOT NULL)")
         cursor.execute(
-            "CREATE TABLE IF NOT EXISTS projects (p_id INTEGER NOT NULL, potential_profit INTEGER NOT NULL, deadline INTEGER NOT NULL, sucess_rate INTEGER NOT NULL, cost INTEGER NOT NULL, difficulty INTEGER NOT NULL, availability BOOLEAN NOT NULL)")
+            "CREATE TABLE IF NOT EXISTS projects (p_id INTEGER NOT NULL, potential_profit INTEGER NOT NULL, deadline INTEGER NOT NULL, sucess_rate INTEGER NOT NULL, cost INTEGER NOT NULL, difficulty INTEGER NOT NULL, availability BOOLEAN NOT NULL, complete BOOLEAN NOT NULL)")
         cursor.execute("CREATE TABLE IF NOT EXISTS e_p (e_id INTEGER NOT NULL, p_id INTEGER NOT NULL)")
         cursor.execute("CREATE TABLE IF NOT EXISTS works_in (e_id INTEGER NOT NULL, department char(20) NOT NULL)")
         cursor.execute("CREATE TABLE IF NOT EXISTS report (r_id INTEGER NOT NULL, misfortune_id INTEGER NOT NULL)")
@@ -355,75 +355,37 @@ def removeSelectedProjects(projectID):
 
 
 def RaiseSalaryStart():  # Not Done
-    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
-    conn.autocommit = False
-    cursor = conn.cursor()
-    try:
-        print('Select an Employee')
-        cursor.execute("select * from employee")
-        res = cursor.fetchall()
-        i = 0;
-        for row in res:
-            i = i + 1
-            if row[6] != 0:
-                print("%d   Name:%s %s, Salary:%s $, Motivation:%s" % (i, row[4], row[5], row[1], row[2]))
-        cursor.close()
-        conn.commit()
-    except:
-        print('-1')
-        conn.rollback()
-
-    cursor = conn.cursor()
-    try:
-        cursor.execute("select * from to_be_hired")
-        res = cursor.fetchall()
-        cursor.close()
-        conn.commit()
-    except:
-        print('-2')
-        conn.rollback()
     while True:
-        choice = int(input())
-        if choice > 0 and choice < 5:
-            break;
-        else:
-            choice = int(
-                input())
-
-        if choice == 1:  # not finished
-            cursor.execute("INSERT IGNORE INTO employee values(%s, %s, %s, %s, %s, %s)",
-                           (userid, salary, motivation, exp, fname, lname))
-        if choice == 2:
-            cursor.execute("INSERT IGNORE INTO employee values(%s, %s, %s, %s, %s, %s)",
-                           (userid, salary, motivation, exp, fname, lname))
-        if choice == 3:
-            cursor.execute("INSERT IGNORE INTO employee values(%s, %s, %s, %s, %s, %s)",
-                           (userid, salary, motivation, exp, fname, lname))
-        conn.close()
+        choice = (input("Type Employee ID:\n"))
+        conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+        conn.autocommit = False
+        cursor = conn.cursor()
+        try:
+            cursor.execute(f'UPDATE employee SET salary = salary+5 WHERE e_id = {choice}')
+            cursor.execute(f'UPDATE employee SET motivation = motivation+5 WHERE e_id = {choice}')
+            conn.commit()
+            conn.close()
+        except:
+            conn.rollback()
+        break
 
 
-def raiseSalary(employeeID):  # Raises the salary of an employee by a set amount. Increases motivation as well
-    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
-    conn.autocommit = False
-    cursor = conn.cursor()
-    try:
-        cursor.execute('UPDATE employee SET salary = (Salary +5), motivation = (motivation+5) WHERE employeeID = %s',
-                       (employeeID))
-    except:
-        conn.rollback()
-    conn.close()
 
 
 def decreaseSalary(employeeID):  # Decreases the salary of an employee by a set amount. Decreases motivation as well.
-    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
-    conn.autocommit = False
-    cursor = conn.cursor()
-    try:
-        cursor.execute('UPDATE employee SET salary = (Salary-5), motivation = (motivation-5) WHERE employeeID = %s',
-                       (employeeID))
-    except:
-        conn.rollback()
-    conn.close()
+    while True:
+        choice = (input("Type Employee ID:\n"))
+        conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+        conn.autocommit = False
+        cursor = conn.cursor()
+        try:
+            cursor.execute(f'UPDATE employee SET salary = salary-5 WHERE e_id = {choice}')
+            cursor.execute(f'UPDATE employee SET motivation = motivation-5 WHERE e_id = {choice}')
+            conn.commit()
+            conn.close()
+        except:
+            conn.rollback()
+        break
 
 
 def raiseEXP(employeeID):  # Decreases the salary of an employee by a set amount. Decreases motivation as well.
@@ -439,33 +401,25 @@ def raiseEXP(employeeID):  # Decreases the salary of an employee by a set amount
 
 # view list of employees
 def viewEmployee():
-    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT * FROM employee")
-        row = cursor.fetchall()
-        widths = []
-        columns = []
-        tavnit = '|'
-        separator = '+'
-
-        for cd in cursor.description:
-            widths.append(max(cd[2], len(cd[0])))
-            columns.append(cd[0])
-
-        for w in widths:
-            tavnit += " %-" + "%ss |" % (w,)
-            separator += '-' * w + '--+'
-
-        print(separator)
-        print(tavnit % tuple(columns))
-        print(separator)
-        for row in results:
-            print(tavnit % row)
-        print(separator)
+        print('Select an Employee')
+        cursor.execute("select * from employee")
+        res = cursor.fetchall()
+        i = 0
+        for row in res:
+            i = i + 1
+            print("%d ID:%s  Name:%s %s, Salary:%s $, Motivation:%s" % (i, row[0], row[4], row[5], row[1], row[2]))
+        cursor.close()
+        conn.commit()
     except:
+        print('-1')
         conn.rollback()
+    while True:
+        choice = (input("Type to Exit\n"))
+        break
     conn.close()
 
 
