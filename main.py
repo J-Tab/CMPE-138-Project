@@ -480,7 +480,31 @@ def viewProject():
 
     try:
         print('Projects:')
-        cursor.execute("select * from projects")
+        cursor.execute("select * from projects where availability = 0")
+        res = cursor.fetchall()
+        i = 0;
+        for row in res:
+            i = i + 1
+            if row[6] != 0:
+                print("%d   Potential Profit:%s, Deadline: %s , Sucess Rate:%s , Cost: %s" % (
+                i, row[2], row[3], row[4], row[5]))
+        cursor.close()
+        conn.commit()
+    except:
+        conn.rollback()
+    while True:
+        choice = input("Enter to return to main menu.")
+        conn.close()
+        break
+
+def viewProjectAvailable():
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
+    conn.autocommit = False
+    cursor = conn.cursor()
+
+    try:
+        print('Projects:')
+        cursor.execute("select * from projects where availability = 1")
         res = cursor.fetchall()
         i = 0;
         for row in res:
@@ -590,8 +614,9 @@ while True:
         RaiseSalaryStart()
     elif choice == 4:
         decreaseSalary()
-    # elif choice == 5:
-    # assign project
+    elif choice == 5:
+		generateProjects()
+		viewProjectAvailable()
     elif choice == 6:
         generateReport()
     elif choice == 7:
