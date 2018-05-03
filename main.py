@@ -56,7 +56,7 @@ def startNewProject():
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS to_be_hired (e_id INTEGER NOT NULL, salary INTEGER NOT NULL, motivation INTEGER NOT NULL, experience INTEGER NOT NULL, f_name char(20) NOT NULL, l_name char(20) NOT NULL , expire_time INTEGER NOT NULL)")
         cursor.execute(
-            "CREATE TABLE IF NOT EXISTS projects (p_id INTEGER NOT NULL, potential_profit INTEGER NOT NULL, deadline INTEGER NOT NULL, sucess_rate INTEGER NOT NULL, cost INTEGER NOT NULL, difficulty INTEGER NOT NULL, availability BOOLEAN NOT NULL, complete BOOLEAN NOT NULL, p_name VARCHAR(100)), success BOOLEAN")
+            "CREATE TABLE IF NOT EXISTS projects (p_id INTEGER NOT NULL, potential_profit INTEGER NOT NULL, deadline INTEGER NOT NULL, sucess_rate INTEGER NOT NULL, cost INTEGER NOT NULL, difficulty INTEGER NOT NULL, availability BOOLEAN NOT NULL, complete BOOLEAN NOT NULL, p_name VARCHAR(100), success BOOLEAN)")
         cursor.execute("CREATE TABLE IF NOT EXISTS e_p (e_id INTEGER NOT NULL, p_id INTEGER NOT NULL)")
         cursor.execute("CREATE TABLE IF NOT EXISTS works_in (e_id INTEGER NOT NULL, department char(20) NOT NULL)")
         cursor.execute("CREATE TABLE IF NOT EXISTS report (r_id INTEGER NOT NULL, misfortune_id INTEGER NOT NULL)")
@@ -406,24 +406,24 @@ def generateReport():
         cursor = conn.cursor()
 
         try:
-            cursor.execute('SELECT * FROM project WHERE project.complete = FALSE AND p_id = %s' % projectID)
+            cursor.execute('SELECT * FROM projects WHERE p_id = %s' % projectID)
             res = cursor.fetchall()
             i = 0;
             for row in res:
                 i = i + 1
-                if row[7] != 0:
-                    print('IN PROGESS:\nReport for %d AKA %s is as follows:\n This project has a difficulty of:%d\n It has a cost of: $ %d.\n Therefore, it has a potential profit of: $%d\n The deadline for the project is: %d \n '  % (row[0],row[8],row[5],row[4],row[1],row[3],row[2]))
+                if (row[7] != 1):
+                    print('IN PROGRESS:\nReport for %d AKA %s is as follows:\n This project has a difficulty of: %d \n It has a cost of: $ %d. \n Therefore, it has a potential profit of: $ %d \n The deadline for the project is: %d \n '  % (row[0],row[8],row[5],row[4],row[1],row[2]))
+                elif (row[9] != 1):
+                    print('COMPLETE:\n %s AKA %s is complete.\n The project has been a success. \n We have earned $ %s.\n Good work! \n' %(row[0],row[8],row[1]))
                 else:
-                    if(row[9] == True):
-                        print('COMPLETE:\n %d AKA %s is complete.\n The project has been a success. \n We have earned $ %d.\n Good work! \n' %(row[0],row[8],row[1]))
-                    else:
-                        print('%d AKA %s is complete:\n The project has been a failure! \n Misfortune has occured! \n ' % (row[0],row[8]))
-
+                    print('%d AKA %s is complete:\n The project has been a failure! \n Misfortune has occured! \n ' % (row[0],row[8]))
             cursor.close()
             conn.commit()
         except:
             conn.rollback()
+        xd = (input("Enter to exit:\n"))
         conn.close()
+        break
 
 def raiseEXP(employeeID):  # Decreases the salary of an employee by a set amount. Decreases motivation as well.
     conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
