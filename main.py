@@ -521,7 +521,7 @@ def nextDay():
         cursor.execute("select salary from employee") #sum up the cost of all employees
         res = cursor.fetchall()
         for row in res:
-            cost = cost + row[0]
+            cost = cost + int(row[0])
         cursor.execute("UPDATE engineering_department SET budget = budget - %s", (cost))
         sweepRemoveProjects()
         cursor.execute("SELECT budget FROM engineering_department")
