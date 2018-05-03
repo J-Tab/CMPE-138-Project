@@ -551,7 +551,7 @@ if choice == 2:
 while True:
     clearConsole()
     choice = int(input(
-        "1. Hire Employee\n2. Fire Employee\n3.Raise Salary\n4.Decrease Salary\n5.Assign Projects\n6.View Report\n7. View Employees\n8. View Project\n9. Exit\n"))
+        "1. Hire Employee\n2. Fire Employee\n3.Raise Salary\n4.Decrease Salary\n5.Assign Projects\n6.View Report\n7. View Employees\n8. View Project\n9. Next day\n10. Exit\n"))
 
     while True:
         if choice > 0 and choice < 10:
