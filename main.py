@@ -374,6 +374,7 @@ def RaiseSalaryStart():  # Not Done
         try:
             cursor.execute(f'UPDATE employee SET salary = salary+5 WHERE e_id = {choice}')
             cursor.execute(f'UPDATE employee SET motivation = motivation+5 WHERE e_id = {choice}')
+            cursor.execute('UPDATE engineering_department SET budget = budget-5')
             conn.commit()
             conn.close()
         except:
@@ -392,6 +393,7 @@ def decreaseSalary():  # Decreases the salary of an employee by a set amount. De
         try:
             cursor.execute(f'UPDATE employee SET salary = salary-5 WHERE e_id = {choice}')
             cursor.execute(f'UPDATE employee SET motivation = motivation-5 WHERE e_id = {choice}')
+            cursor.execute('UPDATE engineering_department SET budget = budget+5')
             conn.commit()
             conn.close()
         except:
@@ -550,6 +552,13 @@ if choice == 2:
 
 while True:
     clearConsole()
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
+    conn.autocommit = False
+    cursor = conn.cursor()
+    cursor.execute('Select budget from engineering_department')
+    res = cursor.fetchall()
+    for row in res:
+        print('Budget: $' , row[0])
     choice = int(input(
         "1. Hire Employee\n2. Fire Employee\n3.Raise Salary\n4.Decrease Salary\n5.Assign Projects\n6.View Report\n7. View Employees\n8. View Project\n9. Next day\n10. Exit\n"))
 
