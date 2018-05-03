@@ -11,7 +11,7 @@ def clearConsole():
 
 
 def removeProject():
-    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
     try:
@@ -25,17 +25,15 @@ def removeProject():
 def startNewProject():
     fname = input('What is your first name: ')
     lname = input('What is your last name: ')
-    # fname = 'Bob'
-    # lname = 'Ross'
     userid = 777
     salary = 0
-    motivation = 0
+    motivation = 10000
     exp = 0
     intel = 0
 
     # check if database exists
     # note to developers, please change the first conn to a database that exists
-    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin")
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root")
     conn.autocommit = False
     cursor = conn.cursor()
     try:
@@ -48,7 +46,7 @@ def startNewProject():
     conn.close()
 
     # change connection to the new database, create tables if not exist
-    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
     try:
@@ -114,7 +112,7 @@ def startNewProject():
 
 
 def updateTBH(e_idx, fnamex, lnamex, experiencex, salaryx, motivationx, exp_timex, idx):
-    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
     try:
@@ -129,7 +127,7 @@ def updateTBH(e_idx, fnamex, lnamex, experiencex, salaryx, motivationx, exp_time
 
 
 def generate_to_be_hired():  # need to add the base case where gotta add in new company
-    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
     try:
@@ -193,7 +191,7 @@ def generate_to_be_hired():  # need to add the base case where gotta add in new 
 
 
 def hireEmployee():
-    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
     try:
@@ -208,20 +206,10 @@ def hireEmployee():
         cursor.close()
         conn.commit()
     except:
-        print('-1')
         conn.rollback()
 
     # save values of expire time
     # cursor.execute("select * from to_be_hired")
-    cursor = conn.cursor()
-    try:
-        cursor.execute("select * from to_be_hired")
-        res = cursor.fetchall()
-        cursor.close()
-        conn.commit()
-    except:
-        print('-2')
-        conn.rollback()
     while True:
         choice = int(input("1. Hire employee 1\n2. Hire employee 2\n3. Hire employee 3\n4. Exit\n"))
         if choice > 0 and choice < 5:
@@ -230,22 +218,45 @@ def hireEmployee():
             choice = int(
                 input("\nInvalid Choice!\n1. Hire employee 1\n2. Hire employee 2\n3. Hire employee 3\n4. Exit\n"))
 
+    cursor = conn.cursor()
+    try:
+        cursor.execute("select * from to_be_hired")
+        res = cursor.fetchall()
+        i = 0
+        for row in res:
+            i = i + 1
+            if choice == i:
+                userid = row[0]
+                salary = row[1]
+                motivation = row[2]
+                experience = row[3]
+                fname = row[4]
+                lname = row[5]
+                break
         if choice == 1:  # not finished
             cursor.execute("INSERT IGNORE INTO employee values(%s, %s, %s, %s, %s, %s)",
-                           (userid, salary, motivation, exp, fname, lname))
+                        (userid, salary, motivation, experience, fname, lname))
+            cursor.execute("UPDATE to_be_hired Set expire_time = %s where e_id = %s", (0, userid))
         if choice == 2:
             cursor.execute("INSERT IGNORE INTO employee values(%s, %s, %s, %s, %s, %s)",
-                           (userid, salary, motivation, exp, fname, lname))
+                        (userid, salary, motivation, experience, fname, lname))
+            cursor.execute("UPDATE to_be_hired Set expire_time = %s where e_id = %s", (0, userid))
         if choice == 3:
             cursor.execute("INSERT IGNORE INTO employee values(%s, %s, %s, %s, %s, %s)",
-                           (userid, salary, motivation, exp, fname, lname))
-        conn.close()
+                        (userid, salary, motivation, experience, fname, lname))
+            cursor.execute("UPDATE to_be_hired Set expire_time = %s where e_id = %s", (0, userid))
+        cursor.close()
+        conn.commit()
+    except:
+        conn.rollback()
+
+    conn.close()
 
     # Delete specific employee from the database using the employeeID
 
 
 def fireEmployee(employeeID):
-    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
 
     conn.autocommit = False
     cursor = conn.cursor()
@@ -265,7 +276,7 @@ def fireEmployee(employeeID):
 
 # Sweeps all and delete any employees that has less than 10 motivation
 def employeeQuit():
-    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
 
     conn.autocommit = False
     cursor = conn.cursor()
@@ -290,7 +301,7 @@ def employeeQuit():
 
 # Delete a specific employee if their motivation is less than 10
 def employeeQuit(employeeID):
-    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
 
     conn.autocommit = False
     cursor = conn.cursor()
@@ -310,7 +321,7 @@ def employeeQuit(employeeID):
 
 # Generates ONE single new project *******UNFINISHED*******
 def generateProjects():
-    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
 
     conn.autocommit = False
     cursor = conn.cursor()
@@ -331,7 +342,7 @@ def generateProjects():
 
 # Removes any expired projects
 def sweepRemoveProjects():
-    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
 
     conn.autocommit = False
     cursor = conn.cursor()
@@ -357,7 +368,7 @@ def removeSelectedProjects(projectID):
 def RaiseSalaryStart():  # Not Done
     while True:
         choice = (input("Type Employee ID:\n"))
-        conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+        conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
         conn.autocommit = False
         cursor = conn.cursor()
         try:
@@ -375,7 +386,7 @@ def RaiseSalaryStart():  # Not Done
 def decreaseSalary(employeeID):  # Decreases the salary of an employee by a set amount. Decreases motivation as well.
     while True:
         choice = (input("Type Employee ID:\n"))
-        conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+        conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
         conn.autocommit = False
         cursor = conn.cursor()
         try:
@@ -389,7 +400,7 @@ def decreaseSalary(employeeID):  # Decreases the salary of an employee by a set 
 
 
 def raiseEXP(employeeID):  # Decreases the salary of an employee by a set amount. Decreases motivation as well.
-    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
     try:
@@ -401,7 +412,7 @@ def raiseEXP(employeeID):  # Decreases the salary of an employee by a set amount
 
 # view list of employees
 def viewEmployee():
-    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
     try:
@@ -424,7 +435,7 @@ def viewEmployee():
 
 
 def viewProject():
-    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
 
@@ -449,7 +460,7 @@ def viewProject():
 
 
 def viewReport():
-    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="admin", db="138Company")
+    conn = MySQLdb.connect(host="localhost", port=3306, user="root", passwd="root", db="138Company")
     conn.autocommit = False
     cursor = conn.cursor()
 
@@ -493,7 +504,7 @@ while True:
         "1. Hire Employee\n2. Fire Employee\n3.Raise Salary\n4.Decrease Salary\n5.Assign Projects\n6.View Report\n7. View Employees\n8. View Project\n9. Exit\n"))
 
     while True:
-        if choice > 0 and choice < 9:
+        if choice > 0 and choice < 10:
             break
         else:
             choice = int(input(
