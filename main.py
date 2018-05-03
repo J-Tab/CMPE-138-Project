@@ -374,6 +374,7 @@ def RaiseSalaryStart():  # Not Done
         try:
             cursor.execute(f'UPDATE employee SET salary = salary+5 WHERE e_id = {choice}')
             cursor.execute(f'UPDATE employee SET motivation = motivation+5 WHERE e_id = {choice}')
+            cursor.execute('UPDATE engineering_department SET budget = budget+5')
             conn.commit()
             conn.close()
         except:
@@ -392,6 +393,7 @@ def decreaseSalary():  # Decreases the salary of an employee by a set amount. De
         try:
             cursor.execute(f'UPDATE employee SET salary = salary-5 WHERE e_id = {choice}')
             cursor.execute(f'UPDATE employee SET motivation = motivation-5 WHERE e_id = {choice}')
+            cursor.execute('UPDATE engineering_department SET budget = budget-5')
             conn.commit()
             conn.close()
         except:
